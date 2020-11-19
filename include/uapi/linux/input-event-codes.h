@@ -678,6 +678,11 @@
 #define KEY_TP_GESTURE_SWIPE_RIGHT	759
 #endif
 
+#ifdef CONFIG_MACH_ASUS_X00TD
+#define KEY_SARSENSOR_NEAR		0x2ea
+#define KEY_SARSENSOR_FAR		0x2eb
+#endif
+
 /* We avoid low common keys in module aliases so they don't get huge. */
 #define KEY_MIN_INTERESTING	KEY_MUTE
 #define KEY_MAX			0x2ff
@@ -732,6 +737,17 @@
 #define ABS_VOLUME		0x20
 
 #define ABS_MISC		0x28
+
+#ifndef CONFIG_MACH_ASUS_X00TD
+/*
+ * 0x2e is reserved and should not be used in input drivers.
+ * It was used by HID as ABS_MISC+6 and userspace needs to detect if
+ * the next ABS_* event is correct or is just ABS_MISC + n.
+ * We define here ABS_RESERVED so userspace can rely on it and detect
+ * the situation described above.
+ */
+#define ABS_RESERVED		0x2e
+#endif
 
 #define ABS_MT_SLOT		0x2f	/* MT slot being modified */
 #define ABS_MT_TOUCH_MAJOR	0x30	/* Major axis of touching ellipse */
