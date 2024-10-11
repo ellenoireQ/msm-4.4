@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2017, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2012-2020, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -54,9 +54,9 @@ fail_read:
 	return 0;
 }
 
-bool is_compatible(char *compat)
+static bool is_compatible(char *compat)
 {
-		return !!of_find_compatible_node(NULL, NULL, compat);
+	return !!of_find_compatible_node(NULL, NULL, compat);
 }
 
 static inline enum imem_type read_imem_type(struct platform_device *pdev)
@@ -518,13 +518,12 @@ error:
 	return rc;
 }
 
-/* A comparator to compare loads (needed later on) */
-int cmp(const void *a, const void *b)
-	{
-		/* want to sort in reverse so flip the comparison */
-		return ((struct load_freq_table *)b)->load -
-			((struct load_freq_table *)a)->load;
-	}
+static int cmp(const void *a, const void *b)
+{
+	/* want to sort in reverse so flip the comparison */
+	return ((struct load_freq_table *)b)->load -
+		((struct load_freq_table *)a)->load;
+}
 
 static int msm_vidc_load_freq_table(struct msm_vidc_platform_resources *res)
 {
@@ -573,6 +572,28 @@ static int msm_vidc_load_freq_table(struct msm_vidc_platform_resources *res)
 	sort(res->load_freq_tbl, res->load_freq_tbl_size,
 			sizeof(*res->load_freq_tbl), cmp, NULL);
 	return rc;
+}
+
+static int msm_vidc_check_dcvs_enabled(struct msm_vidc_platform_resources *res)
+{
+	struct platform_device *pdev = res->pdev;
+
+	if (of_find_property(pdev->dev.of_node, "disable-dcvs-enc", NULL)) {
+		/*
+		 * disable-dcvs-enc is an optional property.
+		 */
+		dprintk(VIDC_DBG, "disable-dcvs-enc\n");
+		msm_vidc_enc_dcvs_mode = false;
+	}
+	if (of_find_property(pdev->dev.of_node, "disable-dcvs-dec", NULL)) {
+		/*
+		 * disable-dcvs-dec is an optional property.
+		 */
+		dprintk(VIDC_DBG, "disable-dcvs-dec\n");
+		msm_vidc_dec_dcvs_mode = false;
+	}
+
+	return 0;
 }
 
 static int msm_vidc_load_dcvs_table(struct msm_vidc_platform_resources *res)
@@ -1020,6 +1041,12 @@ int read_platform_resources_from_dt(
 	rc = msm_vidc_load_freq_table(res);
 	if (rc) {
 		dprintk(VIDC_ERR, "Failed to load freq table: %d\n", rc);
+		goto err_load_freq_table;
+	}
+
+	rc = msm_vidc_check_dcvs_enabled(res);
+	if (rc) {
+		dprintk(VIDC_ERR, "Failed to check dcvs flags: %d\n", rc);
 		goto err_load_freq_table;
 	}
 

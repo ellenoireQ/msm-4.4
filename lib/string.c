@@ -773,15 +773,20 @@ EXPORT_SYMBOL(memcmp);
 
 #ifndef __HAVE_ARCH_BCMP
 /**
- * bcmp - Like memcmp but the return code simply indicates a non-match.
- * @cs: One area of memory.
- * @ct: Another area of memory.
- * @count: The size of the areas.
+ * bcmp - returns 0 if and only if the buffers have identical contents.
+ * @a: pointer to first buffer.
+ * @b: pointer to second buffer.
+ * @len: size of buffers.
+ *
+ * The sign or magnitude of a non-zero return value has no particular
+ * meaning, and architectures may implement their own more efficient bcmp(). So
+ * while this particular implementation is a simple (tail) call to memcmp, do
+ * not rely on anything but whether the return value is zero or non-zero.
  */
 #undef bcmp
-int bcmp(const void *cs, const void *ct, size_t count)
+int bcmp(const void *a, const void *b, size_t len)
 {
-       return memcmp(cs, ct, count);
+	return memcmp(a, b, len);
 }
 EXPORT_SYMBOL(bcmp);
 #endif
