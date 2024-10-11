@@ -189,12 +189,12 @@ static inline bool ecryptfs_cipher_match(const void *ecrytpfs_data,
 	return false;
 }
 
-bool ecryptfs_is_page_in_metadata(const void *ecrytpfs_data, pgoff_t offset)
+static bool ecryptfs_is_page_in_metadata(const void *ecrytpfs_data, pgoff_t offset)
 {
 	return false;
 }
 
-bool ecryptfs_is_data_equal(const void *ecrytpfs_data1,
+static bool ecryptfs_is_data_equal(const void *ecrytpfs_data1,
 		const void *ecrytpfs_data2)
 {
 	return false;
