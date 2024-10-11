@@ -204,6 +204,15 @@ config NEED_SG_DMA_LENGTH
 config SMP
 	def_bool y
 
+config MACH_ASUS_SDM660
+	def_bool y
+
+config MACH_ASUS
+	def_bool y
+
+config MACH_ASUS_X01BD
+	def_bool y
+
 config HOTPLUG_SIZE_BITS
 	int "Memory hotplug block size(28 => 256MB 30 => 1GB)"
 	depends on SPARSEMEM
